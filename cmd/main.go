@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jllovet/go-server-template/cmd/api"
 	"github.com/jllovet/go-server-template/config"
+	"github.com/jllovet/go-server-template/internal/server"
 	"github.com/jllovet/go-server-template/internal/todo"
 	"github.com/jllovet/go-server-template/internal/todo/memory"
 	"github.com/jllovet/go-server-template/logger"
@@ -52,7 +52,7 @@ func run(
 	repo := memory.New()
 	service := todo.NewService(repo)
 
-	srv := api.NewServer(
+	srv := server.NewServer(
 		service,
 		config,
 		logger,

@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/jllovet/go-server-template/cmd/api"
 	"github.com/jllovet/go-server-template/config"
+	"github.com/jllovet/go-server-template/internal/server"
 	"github.com/jllovet/go-server-template/internal/todo"
 	"github.com/jllovet/go-server-template/internal/todo/memory"
 )
@@ -27,11 +27,11 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 
 	repo := memory.New()
 	service := todo.NewService(repo)
-	server := api.NewServer(service, cfg, logger)
+	srv := server.NewServer(service, cfg, logger)
 
 	// 2. Create a test server
 	// httptest.NewServer starts a real HTTP server on a random port
-	ts := httptest.NewServer(server)
+	ts := httptest.NewServer(srv)
 	defer ts.Close()
 
 	client := ts.Client()

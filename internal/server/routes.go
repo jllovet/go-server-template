@@ -1,10 +1,10 @@
-package api
+package server
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/jllovet/go-server-template/services/healthz"
+	"github.com/jllovet/go-server-template/internal/healthz"
 )
 
 func (s *Server) routes() http.Handler {

@@ -2,46 +2,47 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/jllovet/go-server-template/config"
-	"github.com/jllovet/go-server-template/encoding"
 	"github.com/jllovet/go-server-template/services/healthz"
 )
 
-func addRoutes(
-	mux *http.ServeMux,
-	cfg *config.Config,
-	logger *log.Logger,
-) {
+func (s *Server) routes() http.Handler {
+	mux := http.NewServeMux()
+
 	// Health endpoints
-	mux.Handle("GET /healthz", healthz.HandleHealthCheck(logger))
-	mux.Handle("GET /ready", HandleReady(logger))
+	mux.Handle("GET /healthz", healthz.HandleHealthCheck(s.logger))
+	mux.Handle("GET /ready", s.handleReady())
 
 	// Versioned API example
-	mux.Handle("GET /api/v0/hello", HandleHello(cfg))
+	mux.Handle("GET /api/v0/hello", s.handleHello())
+
+	// Todo endpoints
+	mux.HandleFunc("POST /todos", s.handleCreateTodo())
+	mux.HandleFunc("GET /todos", s.handleListTodos())
+	mux.HandleFunc("GET /todos/{id}", s.handleGetTodo())
+	mux.HandleFunc("PATCH /todos/{id}", s.handleUpdateTodoTitle())
+	mux.HandleFunc("PUT /todos/{id}/completed", s.handleSetTodoCompleted())
+	mux.HandleFunc("DELETE /todos/{id}", s.handleDeleteTodo())
 
 	// Default 404
 	mux.Handle("/", http.NotFoundHandler())
+
+	return mux
 }
 
-func HandleHello(cfg *config.Config) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			encoding.Encode(w, http.StatusOK, map[string]string{
-				"message": fmt.Sprintf("Hello from %s:%s", cfg.Host, cfg.Port),
-			})
-		},
-	)
+func (s *Server) handleHello() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.encode(w, http.StatusOK, map[string]string{
+			"message": fmt.Sprintf("Hello from %s:%s", s.config.Host, s.config.Port),
+		})
+	}
 }
 
 // Returns whether the server is ready
-func HandleReady(logger *log.Logger) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			// Check dependencies here. If all ready return {"ready": true}
-			encoding.Encode(w, http.StatusOK, map[string]any{"ready": true})
-		},
-	)
+func (s *Server) handleReady() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Check dependencies here. If all ready return {"ready": true}
+		s.encode(w, http.StatusOK, map[string]any{"ready": true})
+	}
 }

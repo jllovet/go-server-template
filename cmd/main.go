@@ -13,6 +13,8 @@ import (
 
 	"github.com/jllovet/go-server-template/cmd/api"
 	"github.com/jllovet/go-server-template/config"
+	"github.com/jllovet/go-server-template/internal/todo"
+	"github.com/jllovet/go-server-template/internal/todo/memory"
 	"github.com/jllovet/go-server-template/logger"
 )
 
@@ -46,7 +48,12 @@ func run(
 
 	loggerPrefix := fmt.Sprintf("%s: ", getenv("SERVICE_NAME", ""))
 	logger := logger.New(stdout, loggerPrefix)
+
+	repo := memory.New()
+	service := todo.NewService(repo)
+
 	srv := api.NewServer(
+		service,
 		config,
 		logger,
 	)

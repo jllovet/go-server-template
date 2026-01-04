@@ -121,8 +121,8 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 		}
 	})
 
-	t.Run("4. Set Completed", func(t *testing.T) {
-		resp, err := request("PUT", "/todos/"+createdID+"/completed", map[string]bool{"completed": true})
+	t.Run("4. Mark Complete", func(t *testing.T) {
+		resp, err := request("POST", "/todos/"+createdID+"/complete", nil)
 		if err != nil {
 			t.Fatalf("request failed: %v", err)
 		}
@@ -133,7 +133,19 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 		}
 	})
 
-	t.Run("5. Delete Todo", func(t *testing.T) {
+	t.Run("5. Mark Incomplete", func(t *testing.T) {
+		resp, err := request("POST", "/todos/"+createdID+"/incomplete", nil)
+		if err != nil {
+			t.Fatalf("request failed: %v", err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("expected 200 OK, got %d", resp.StatusCode)
+		}
+	})
+
+	t.Run("6. Delete Todo", func(t *testing.T) {
 		resp, err := request("DELETE", "/todos/"+createdID, nil)
 		if err != nil {
 			t.Fatalf("request failed: %v", err)

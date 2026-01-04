@@ -22,7 +22,8 @@ func (s *Server) routes() http.Handler {
 	mux.HandleFunc("GET /todos", s.handleListTodos())
 	mux.HandleFunc("GET /todos/{id}", s.handleGetTodo())
 	mux.HandleFunc("PATCH /todos/{id}", s.handleUpdateTodoTitle())
-	mux.HandleFunc("PUT /todos/{id}/completed", s.handleSetTodoCompleted())
+	mux.HandleFunc("POST /todos/{id}/complete", s.handleMarkTodoComplete())
+	mux.HandleFunc("POST /todos/{id}/incomplete", s.handleMarkTodoIncomplete())
 	mux.HandleFunc("DELETE /todos/{id}", s.handleDeleteTodo())
 
 	// Default 404

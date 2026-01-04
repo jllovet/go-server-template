@@ -66,18 +66,22 @@ func (s *Server) handleUpdateTodoTitle() http.HandlerFunc {
 	}
 }
 
-func (s *Server) handleSetTodoCompleted() http.HandlerFunc {
-	type request struct {
-		Completed bool `json:"completed"`
-	}
+func (s *Server) handleMarkTodoComplete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		var req request
-		if err := s.decode(w, r, &req); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		t, err := s.service.SetCompleted(r.Context(), id, true)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		t, err := s.service.SetCompleted(r.Context(), id, req.Completed)
+		s.encode(w, http.StatusOK, t)
+	}
+}
+
+func (s *Server) handleMarkTodoIncomplete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		t, err := s.service.SetCompleted(r.Context(), id, false)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

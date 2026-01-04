@@ -261,3 +261,14 @@ func TestService(t *testing.T) {
 		}
 	})
 }
+
+func BenchmarkService_Create(b *testing.B) {
+	ctx := context.Background()
+	repo := newMockRepository()
+	service := todo.NewService(repo)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = service.Create(ctx, "Benchmark")
+	}
+}

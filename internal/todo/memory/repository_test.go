@@ -135,3 +135,26 @@ func TestRepository(t *testing.T) {
 		}
 	})
 }
+
+func BenchmarkRepository_Save(b *testing.B) {
+	ctx := context.Background()
+	repo := memory.New()
+	item := todo.Todo{ID: "1", Title: "Benchmark"}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = repo.Save(ctx, item)
+	}
+}
+
+func BenchmarkRepository_FindByID(b *testing.B) {
+	ctx := context.Background()
+	repo := memory.New()
+	item := todo.Todo{ID: "1", Title: "Benchmark"}
+	_ = repo.Save(ctx, item)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = repo.FindByID(ctx, "1")
+	}
+}

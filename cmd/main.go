@@ -45,7 +45,11 @@ func run(
 	defer cancel()
 	config := &config.InitializedConfig
 
-	logger := logger.New(stdout, getenv("SERVICE_NAME", "todo-service"))
+	logOutput := stdout
+	if getenv("DISABLE_LOGGING", "") == "true" {
+		logOutput = io.Discard
+	}
+	logger := logger.New(logOutput, getenv("SERVICE_NAME", "todo-service"))
 
 	repo := memory.New()
 	service := todo.NewService(repo)

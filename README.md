@@ -54,7 +54,7 @@ This project follows **Hexagonal Architecture** (also known as Ports and Adapter
 
 ## Visualizing the Architecture
 
-![architecture.svg](architecture.svg)
+![architecture.png](architecture.png)
 
 ---
 

@@ -18,13 +18,13 @@ func (s *Server) routes() http.Handler {
 	mux.Handle("GET /api/v0/hello", s.handleHello())
 
 	// Todo endpoints
-	mux.HandleFunc("POST /todos", s.handleCreateTodo())
-	mux.HandleFunc("GET /todos", s.handleListTodos())
-	mux.HandleFunc("GET /todos/{id}", s.handleGetTodo())
-	mux.HandleFunc("PATCH /todos/{id}", s.handleUpdateTodoTitle())
-	mux.HandleFunc("POST /todos/{id}/complete", s.handleMarkTodoComplete())
-	mux.HandleFunc("POST /todos/{id}/incomplete", s.handleMarkTodoIncomplete())
-	mux.HandleFunc("DELETE /todos/{id}", s.handleDeleteTodo())
+	mux.HandleFunc("POST /api/v1/todos", s.handleCreateTodo())
+	mux.HandleFunc("GET /api/v1/todos", s.handleListTodos())
+	mux.HandleFunc("GET /api/v1/todos/{id}", s.handleGetTodo())
+	mux.HandleFunc("PATCH /api/v1/todos/{id}", s.handleUpdateTodoTitle())
+	mux.HandleFunc("POST /api/v1/todos/{id}/complete", s.handleMarkTodoComplete())
+	mux.HandleFunc("POST /api/v1/todos/{id}/incomplete", s.handleMarkTodoIncomplete())
+	mux.HandleFunc("DELETE /api/v1/todos/{id}", s.handleDeleteTodo())
 
 	// Default 404
 	mux.Handle("/", http.NotFoundHandler())

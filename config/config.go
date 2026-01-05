@@ -12,6 +12,8 @@ type Config struct {
 	Host        string
 	Port        string
 	DatabaseURL string
+	CertFile    string
+	KeyFile     string
 }
 
 func InitConfig() Config {
@@ -20,6 +22,8 @@ func InitConfig() Config {
 		Host:        GetEnv("PROJECT_HOST", "localhost"),
 		Port:        GetEnv("PROJECT_PORT", "8080"),
 		DatabaseURL: GetEnv("DATABASE_URL", ""),
+		CertFile:    GetEnv("CERT_FILE", ""),
+		KeyFile:     GetEnv("KEY_FILE", ""),
 	}
 }
 

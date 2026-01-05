@@ -82,7 +82,13 @@ func run(
 	}
 	go func() {
 		logger.Info("listening", "address", httpServer.Addr)
-		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		var err error
+		if config.CertFile != "" && config.KeyFile != "" {
+			err = httpServer.ListenAndServeTLS(config.CertFile, config.KeyFile)
+		} else {
+			err = httpServer.ListenAndServe()
+		}
+		if err != nil && err != http.ErrServerClosed {
 			fmt.Fprintf(os.Stderr, "error listening and serving: %s\n", err)
 		}
 	}()

@@ -9,15 +9,17 @@ import (
 var InitializedConfig = InitConfig()
 
 type Config struct {
-	Host string
-	Port string
+	Host        string
+	Port        string
+	DatabaseURL string
 }
 
 func InitConfig() Config {
 	godotenv.Load()
 	return Config{
-		Host: GetEnv("PROJECT_HOST", "localhost"),
-		Port: GetEnv("PROJECT_PORT", "8080"),
+		Host:        GetEnv("PROJECT_HOST", "localhost"),
+		Port:        GetEnv("PROJECT_PORT", "8080"),
+		DatabaseURL: GetEnv("DATABASE_URL", ""),
 	}
 }
 

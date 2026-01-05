@@ -3,15 +3,13 @@ package server
 import (
 	"fmt"
 	"net/http"
-
-	"github.com/jllovet/go-server-template/internal/healthz"
 )
 
 func (s *Server) routes() http.Handler {
 	mux := http.NewServeMux()
 
 	// Health endpoints
-	mux.Handle("GET /healthz", healthz.HandleHealthCheck(s.logger))
+	mux.Handle("GET /healthz", s.handleHealthCheck())
 	mux.Handle("GET /ready", s.handleReady())
 
 	// Versioned API example
@@ -37,6 +35,12 @@ func (s *Server) handleHello() http.HandlerFunc {
 		s.encode(w, http.StatusOK, map[string]string{
 			"message": fmt.Sprintf("Hello from %s:%s", s.config.Host, s.config.Port),
 		})
+	}
+}
+
+func (s *Server) handleHealthCheck() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.encode(w, http.StatusOK, map[string]any{"status": "ok"})
 	}
 }
 

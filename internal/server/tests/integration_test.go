@@ -60,7 +60,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 	// 3. Run the workflow
 
 	t.Run("1. Create Todo", func(t *testing.T) {
-		resp, err := request("POST", "/todos", map[string]string{"title": "Integration Test"})
+		resp, err := request("POST", "/api/v1/todos", map[string]string{"title": "Integration Test"})
 		if err != nil {
 			t.Fatalf("request failed: %v", err)
 		}
@@ -85,7 +85,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 	})
 
 	t.Run("2. List Todos", func(t *testing.T) {
-		resp, err := request("GET", "/todos", nil)
+		resp, err := request("GET", "/api/v1/todos", nil)
 		if err != nil {
 			t.Fatalf("request failed: %v", err)
 		}
@@ -102,7 +102,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 	})
 
 	t.Run("3. Update Title", func(t *testing.T) {
-		resp, err := request("PATCH", "/todos/"+createdID, map[string]string{"title": "Updated Title"})
+		resp, err := request("PATCH", "/api/v1/todos/"+createdID, map[string]string{"title": "Updated Title"})
 		if err != nil {
 			t.Fatalf("request failed: %v", err)
 		}
@@ -122,7 +122,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 	})
 
 	t.Run("4. Mark Complete", func(t *testing.T) {
-		resp, err := request("POST", "/todos/"+createdID+"/complete", nil)
+		resp, err := request("POST", "/api/v1/todos/"+createdID+"/complete", nil)
 		if err != nil {
 			t.Fatalf("request failed: %v", err)
 		}
@@ -134,7 +134,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 	})
 
 	t.Run("5. Mark Incomplete", func(t *testing.T) {
-		resp, err := request("POST", "/todos/"+createdID+"/incomplete", nil)
+		resp, err := request("POST", "/api/v1/todos/"+createdID+"/incomplete", nil)
 		if err != nil {
 			t.Fatalf("request failed: %v", err)
 		}
@@ -146,7 +146,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 	})
 
 	t.Run("6. Delete Todo", func(t *testing.T) {
-		resp, err := request("DELETE", "/todos/"+createdID, nil)
+		resp, err := request("DELETE", "/api/v1/todos/"+createdID, nil)
 		if err != nil {
 			t.Fatalf("request failed: %v", err)
 		}
@@ -159,7 +159,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 
 	t.Run("7. Malformed JSON", func(t *testing.T) {
 		// Manually construct a request with invalid JSON (missing closing brace)
-		req, err := http.NewRequest("POST", baseURL+"/todos", bytes.NewBufferString(`{"title": "broken"`))
+		req, err := http.NewRequest("POST", baseURL+"/api/v1/todos", bytes.NewBufferString(`{"title": "broken"`))
 		if err != nil {
 			t.Fatalf("failed to create request: %v", err)
 		}

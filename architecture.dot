@@ -2,7 +2,6 @@ digraph Architecture {
     rankdir=LR;
     node [shape=box, style=filled, fillcolor=white, fontname="Helvetica"];
     edge [fontname="Helvetica", fontsize=10];
-    bgcolor="transparent";
 
     subgraph cluster_cmd {
         label="cmd";

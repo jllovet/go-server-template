@@ -1,0 +1,64 @@
+digraph Architecture {
+    rankdir=LR;
+    node [shape=box, style=filled, fillcolor=white, fontname="Helvetica"];
+    edge [fontname="Helvetica", fontsize=10];
+    bgcolor="transparent";
+
+    subgraph cluster_cmd {
+        label="cmd";
+        style=dashed;
+        color=grey;
+        Main [label="main.go\n(Composition Root)", fillcolor="#e1f5fe"];
+    }
+
+    subgraph cluster_internal {
+        label="internal";
+        style=dashed;
+        color=grey;
+
+        subgraph cluster_server {
+            label="server";
+            style=solid;
+            color=black;
+            HTTP_Server [label="HTTP Server\n(Driving Adapter)", fillcolor="#fff9c4"];
+            Middleware [label="Middleware", fillcolor="#fff9c4"];
+        }
+
+        subgraph cluster_todo {
+            label="todo (Domain)";
+            style=solid;
+            color=black;
+            Service_Interface [label="Service Interface\n(Port)", shape=ellipse, style=dashed];
+            Service_Impl [label="Service Implementation", fillcolor="#c8e6c9"];
+            Repo_Interface [label="Repository Interface\n(Port)", shape=ellipse, style=dashed];
+        }
+
+        subgraph cluster_adapters {
+            label="Adapters";
+            style=solid;
+            color=black;
+            Postgres_Repo [label="Postgres Repository\n(Driven Adapter)", fillcolor="#ffe0b2"];
+            Memory_Repo [label="Memory Repository\n(Driven Adapter)", fillcolor="#ffe0b2"];
+        }
+    }
+
+    Config [label="Config"];
+    Logger [label="Logger"];
+    Database [shape=cylinder, label="PostgreSQL", fillcolor="#cfd8dc"];
+
+    Main -> Config [label="loads"];
+    Main -> Logger [label="initializes"];
+    Main -> Postgres_Repo [label="constructs"];
+    Main -> Service_Impl [label="injects repo"];
+    Main -> HTTP_Server [label="injects service"];
+
+    HTTP_Server -> Middleware [label="uses"];
+    HTTP_Server -> Service_Interface [label="calls"];
+    Service_Impl -> Service_Interface [style=dashed, arrowhead=none, label="implements"];
+    Service_Impl -> Repo_Interface [label="calls"];
+    
+    Postgres_Repo -> Repo_Interface [style=dashed, arrowhead=none, label="implements"];
+    Memory_Repo -> Repo_Interface [style=dashed, arrowhead=none, label="implements"];
+
+    Postgres_Repo -> Database [label="SQL"];
+}

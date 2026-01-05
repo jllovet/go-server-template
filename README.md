@@ -1,25 +1,60 @@
 # Overview
 
-As I have been relearning Golang, I have been spending time studying how to build http servers. This repository is an attempt to synthesize lessons and patterns to help make building and managing http servers sensible and able to scale.
+This repository is an attempt to combine pragmatic design patterns for developing http servers in Go into an example that can be easily adapted in other projects.
 
-Another priority of mine is to build servers that can easily be compared to OpenAPI specs. At some point in the future, I may try to do this through code generation, such as with Oto or one of the many OpenAPI code generation tools. I believe that spec-first development empowers API-first development, which is a valuable way to build products and services in a way that all of the consumers of it - from developers to admins to end users - will be happy and more productive.
+# Architecture & Design
 
-At the time of this initial writing, I am refraining from using code generation, because I want to make sure that I'm being intentional about each of the server components I'm using. If you have a recommendation about how to approach integrating a code-generation tool into this project, please open a Github Issue and let me know your thoughts.
+This project follows **Hexagonal Architecture** (also known as Ports and Adapters). The goal is to decouple the core business logic from external concerns like the database, the HTTP transport layer, or configuration.
 
-# Getting Started
+## Core Components
 
-Clone the repository.
+1.  **Domain (`internal/todo`)**: This is the heart of the application. It defines the `Todo` entity and the interfaces (`Service` and `Repository`) that the rest of the application uses. It has no dependencies on the database or HTTP server.
+2.  **Service (`internal/todo/service.go`)**: Implements the business logic. It relies on the `Repository` interface to persist data, but doesn't know *how* that data is persisted.
+3.  **Server (`internal/server`)**: The HTTP "Driving Adapter". It handles incoming HTTP requests, parses JSON, validates input, and calls the `Service`. It doesn't know about SQL or database connections.
+4.  **Storage (`internal/todo/postgres`, `internal/todo/memory`)**: The "Driven Adapters". These implement the `Repository` interface defined in the domain.
+5.  **Composition Root (`cmd/main.go`)**: This is where everything is wired together. It reads config, initializes the database connection, creates the repository, injects it into the service, and injects the service into the HTTP server.
 
-Run the following to get a .env file to use.
-```shell
-cp .env_example .env
-```
+## Design Patterns Used
 
-Using the default values there, you can spin up a server running on `http://localhost:8080` by running
+*   **Dependency Injection**: Dependencies are explicitly passed to constructors (e.g., `NewServer(service)`, `NewService(repo)`). This makes testing easier by allowing mocks to be swapped in.
+*   **Graceful Shutdown**: The server listens for OS interrupt signals and ensures that active requests are completed before shutting down.
+*   **Structured Logging**: Uses Go's `log/slog` for structured, context-aware logging. Request IDs are generated in middleware and threaded through the context.
+*   **Configuration**: 12-factor app style configuration using environment variables.
 
-```shell
-make build && make run
-```
+# Usage
+
+## Prerequisites
+
+*   Go 1.24+
+*   Docker (for PostgreSQL)
+*   Make
+
+## Running the Server
+
+1.  **Setup Configuration**:
+    ```shell
+    cp .env_example .env
+    ```
+
+2.  **Start the Database**:
+    ```shell
+    make build-db
+    ```
+
+3.  **Run the Application**:
+    ```shell
+    make run
+    ```
+    The server will start on `http://localhost:8080`.
+
+4.  **Run Tests**:
+    ```shell
+    make test
+    ```
+
+## Visualizing the Architecture
+
+![architecture.svg](architecture.svg)
 
 ---
 
@@ -31,4 +66,3 @@ I'm heavily indebted to [Mat Ryer](https://github.com/matryer) for the ideas and
 - [How Mat writes HTTP services in Go - Changelog: Go Time](https://www.youtube.com/watch?v=tJ1zvBBkmmY&ab_channel=Changelog)
 - [GopherCon 2019: How I Write HTTP Web Services after Eight Years - Mat Ryer](https://www.youtube.com/watch?v=rWBSMsLG8po&ab_channel=GopherAcademy)
 - [How I build APIs capable of gigantic scale in Go – Mat Ryer](https://www.youtube.com/watch?v=FkPqqakDeRY)
-

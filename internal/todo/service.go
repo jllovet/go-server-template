@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+
+	"github.com/jllovet/go-server-template/logger"
 )
 
 // service implements the Service interface.
@@ -34,7 +36,10 @@ func (s *service) Create(ctx context.Context, title string) (Todo, error) {
 		Title: title,
 	}
 
+	logger.FromContext(ctx).Info("creating todo", "id", t.ID)
+
 	if err := s.repo.Save(ctx, t); err != nil {
+		logger.FromContext(ctx).Error("failed to save todo", "error", err)
 		return Todo{}, fmt.Errorf("failed to save todo: %w", err)
 	}
 
@@ -44,6 +49,7 @@ func (s *service) Create(ctx context.Context, title string) (Todo, error) {
 func (s *service) List(ctx context.Context) ([]Todo, error) {
 	todos, err := s.repo.FindAll(ctx)
 	if err != nil {
+		logger.FromContext(ctx).Error("failed to list todos", "error", err)
 		return nil, fmt.Errorf("failed to list todos: %w", err)
 	}
 	return todos, nil
@@ -52,6 +58,7 @@ func (s *service) List(ctx context.Context) ([]Todo, error) {
 func (s *service) Get(ctx context.Context, id string) (Todo, error) {
 	t, err := s.repo.FindByID(ctx, id)
 	if err != nil {
+		logger.FromContext(ctx).Error("failed to get todo", "id", id, "error", err)
 		return Todo{}, fmt.Errorf("failed to get todo %q: %w", id, err)
 	}
 	return t, nil
@@ -60,6 +67,7 @@ func (s *service) Get(ctx context.Context, id string) (Todo, error) {
 func (s *service) Update(ctx context.Context, id string, title string) (Todo, error) {
 	t, err := s.repo.FindByID(ctx, id)
 	if err != nil {
+		logger.FromContext(ctx).Error("failed to find todo for update", "id", id, "error", err)
 		return Todo{}, fmt.Errorf("failed to find todo for update: %w", err)
 	}
 
@@ -68,7 +76,10 @@ func (s *service) Update(ctx context.Context, id string, title string) (Todo, er
 	}
 	t.Title = title
 
+	logger.FromContext(ctx).Info("updating todo", "id", id)
+
 	if err := s.repo.Save(ctx, t); err != nil {
+		logger.FromContext(ctx).Error("failed to save updated todo", "id", id, "error", err)
 		return Todo{}, fmt.Errorf("failed to save updated todo: %w", err)
 	}
 
@@ -78,12 +89,16 @@ func (s *service) Update(ctx context.Context, id string, title string) (Todo, er
 func (s *service) SetCompleted(ctx context.Context, id string, completed bool) (Todo, error) {
 	t, err := s.repo.FindByID(ctx, id)
 	if err != nil {
+		logger.FromContext(ctx).Error("failed to find todo for update", "id", id, "error", err)
 		return Todo{}, fmt.Errorf("failed to find todo for update: %w", err)
 	}
 
 	t.Completed = completed
 
+	logger.FromContext(ctx).Info("setting todo completion", "id", id, "completed", completed)
+
 	if err := s.repo.Save(ctx, t); err != nil {
+		logger.FromContext(ctx).Error("failed to save updated todo", "id", id, "error", err)
 		return Todo{}, fmt.Errorf("failed to save updated todo: %w", err)
 	}
 
@@ -91,7 +106,9 @@ func (s *service) SetCompleted(ctx context.Context, id string, completed bool) (
 }
 
 func (s *service) Delete(ctx context.Context, id string) error {
+	logger.FromContext(ctx).Info("deleting todo", "id", id)
 	if err := s.repo.Delete(ctx, id); err != nil {
+		logger.FromContext(ctx).Error("failed to delete todo", "id", id, "error", err)
 		return fmt.Errorf("failed to delete todo %q: %w", id, err)
 	}
 	return nil

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -23,7 +23,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 		Port: "8080", // Not actually used by httptest, but required by struct
 	}
 	// Discard logs during tests to keep output clean
-	logger := log.New(io.Discard, "", 0)
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 
 	repo := memory.New()
 	service := todo.NewService(repo)
@@ -154,6 +154,25 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 
 		if resp.StatusCode != http.StatusNoContent {
 			t.Errorf("expected 204 No Content, got %d", resp.StatusCode)
+		}
+	})
+
+	t.Run("7. Malformed JSON", func(t *testing.T) {
+		// Manually construct a request with invalid JSON (missing closing brace)
+		req, err := http.NewRequest("POST", baseURL+"/todos", bytes.NewBufferString(`{"title": "broken"`))
+		if err != nil {
+			t.Fatalf("failed to create request: %v", err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("request failed: %v", err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("expected 400 Bad Request, got %d", resp.StatusCode)
 		}
 	})
 }

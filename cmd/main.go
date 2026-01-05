@@ -43,11 +43,9 @@ func run(
 ) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
-	fmt.Fprintf(stdout, "%s\n", "inside of run")
 	config := &config.InitializedConfig
 
-	loggerPrefix := fmt.Sprintf("%s: ", getenv("SERVICE_NAME", ""))
-	logger := logger.New(stdout, loggerPrefix)
+	logger := logger.New(stdout, getenv("SERVICE_NAME", "todo-service"))
 
 	repo := memory.New()
 	service := todo.NewService(repo)
@@ -62,7 +60,7 @@ func run(
 		Handler: srv,
 	}
 	go func() {
-		logger.Printf("listening on %s\n", httpServer.Addr)
+		logger.Info("listening", "address", httpServer.Addr)
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			fmt.Fprintf(os.Stderr, "error listening and serving: %s\n", err)
 		}

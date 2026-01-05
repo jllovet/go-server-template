@@ -156,4 +156,23 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 			t.Errorf("expected 204 No Content, got %d", resp.StatusCode)
 		}
 	})
+
+	t.Run("7. Malformed JSON", func(t *testing.T) {
+		// Manually construct a request with invalid JSON (missing closing brace)
+		req, err := http.NewRequest("POST", baseURL+"/todos", bytes.NewBufferString(`{"title": "broken"`))
+		if err != nil {
+			t.Fatalf("failed to create request: %v", err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("request failed: %v", err)
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("expected 400 Bad Request, got %d", resp.StatusCode)
+		}
+	})
 }

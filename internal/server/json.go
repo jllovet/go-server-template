@@ -3,10 +3,16 @@ package server
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/jllovet/go-server-template/logger"
 )
 
 func (s *Server) decode(w http.ResponseWriter, r *http.Request, v interface{}) error {
-	return json.NewDecoder(r.Body).Decode(v)
+	if err := json.NewDecoder(r.Body).Decode(v); err != nil {
+		logger.FromContext(r.Context()).Error("json decoding failed", "error", err)
+		return err
+	}
+	return nil
 }
 
 func (s *Server) encode(w http.ResponseWriter, status int, v interface{}) {

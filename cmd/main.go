@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"io"
 	"net"
@@ -11,10 +12,13 @@ import (
 	"sync"
 	"time"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+
 	"github.com/jllovet/go-server-template/config"
 	"github.com/jllovet/go-server-template/internal/server"
 	"github.com/jllovet/go-server-template/internal/todo"
 	"github.com/jllovet/go-server-template/internal/todo/memory"
+	"github.com/jllovet/go-server-template/internal/todo/postgres"
 	"github.com/jllovet/go-server-template/logger"
 )
 
@@ -51,7 +55,20 @@ func run(
 	}
 	logger := logger.New(logOutput, getenv("SERVICE_NAME", "todo-service"))
 
-	repo := memory.New()
+	var repo todo.Repository
+	if config.DatabaseURL != "" {
+		db, err := sql.Open("pgx", config.DatabaseURL)
+		if err != nil {
+			return fmt.Errorf("open db: %w", err)
+		}
+		defer db.Close()
+		if err := db.Ping(); err != nil {
+			return fmt.Errorf("ping db: %w", err)
+		}
+		repo = postgres.New(db)
+	} else {
+		repo = memory.New()
+	}
 	service := todo.NewService(repo)
 
 	srv := server.NewServer(

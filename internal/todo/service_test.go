@@ -3,11 +3,14 @@ package todo_test
 import (
 	"context"
 	"errors"
+	"io"
+	"log/slog"
 	"reflect"
 	"sync"
 	"testing"
 
 	"github.com/jllovet/go-server-template/internal/todo"
+	"github.com/jllovet/go-server-template/logger"
 )
 
 var errRepository = errors.New("repository error")
@@ -263,7 +266,8 @@ func TestService(t *testing.T) {
 }
 
 func BenchmarkService_Create(b *testing.B) {
-	ctx := context.Background()
+	l := slog.New(slog.NewTextHandler(io.Discard, nil))
+	ctx := logger.WithContext(context.Background(), l)
 	repo := newMockRepository()
 	service := todo.NewService(repo)
 

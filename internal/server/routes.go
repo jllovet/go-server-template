@@ -29,7 +29,7 @@ func (s *Server) routes() http.Handler {
 	// Default 404
 	mux.Handle("/", http.NotFoundHandler())
 
-	return mux
+	return s.loggingMiddleware(mux)
 }
 
 func (s *Server) handleHello() http.HandlerFunc {

@@ -1,22 +1,41 @@
 package logger
 
 import (
+	"context"
 	"io"
-	"log"
+	"log/slog"
 	"os"
 )
 
-func New(out io.Writer, prefix string) *log.Logger {
+func New(out io.Writer, component string) *slog.Logger {
 	if out == nil {
 		out = os.Stdout
 	}
-	return log.New(
-		out,
-		prefix,
-		log.Ldate|log.Ltime|log.Lmicroseconds|log.LUTC|log.Lshortfile|log.Lmsgprefix,
-	)
+
+	handler := slog.NewJSONHandler(out, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	})
+
+	logger := slog.New(handler)
+	if component != "" {
+		logger = logger.With("component", component)
+	}
+	return logger
 }
 
-func Stdout(prefix string) *log.Logger {
-	return New(os.Stdout, prefix)
+func Stdout(component string) *slog.Logger {
+	return New(os.Stdout, component)
+}
+
+type ctxKey struct{}
+
+func WithContext(ctx context.Context, l *slog.Logger) context.Context {
+	return context.WithValue(ctx, ctxKey{}, l)
+}
+
+func FromContext(ctx context.Context) *slog.Logger {
+	if l, ok := ctx.Value(ctxKey{}).(*slog.Logger); ok {
+		return l
+	}
+	return slog.Default()
 }

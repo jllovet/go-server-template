@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -23,7 +23,7 @@ func TestIntegration_TodoWorkflow(t *testing.T) {
 		Port: "8080", // Not actually used by httptest, but required by struct
 	}
 	// Discard logs during tests to keep output clean
-	logger := log.New(io.Discard, "", 0)
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 
 	repo := memory.New()
 	service := todo.NewService(repo)

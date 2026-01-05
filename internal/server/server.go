@@ -1,7 +1,7 @@
 package server
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/jllovet/go-server-template/config"
@@ -11,10 +11,10 @@ import (
 type Server struct {
 	service todo.Service
 	config  *config.Config
-	logger  *log.Logger
+	logger  *slog.Logger
 }
 
-func NewServer(service todo.Service, config *config.Config, logger *log.Logger) *Server {
+func NewServer(service todo.Service, config *config.Config, logger *slog.Logger) *Server {
 	return &Server{
 		service: service,
 		config:  config,

@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
+	github.com/segmentio/ksuid v1.0.4
 )
 
 require (

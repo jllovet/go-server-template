@@ -2,11 +2,10 @@ package todo
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 
 	"github.com/jllovet/go-server-template/logger"
+	"github.com/segmentio/ksuid"
 )
 
 // service implements the Service interface.
@@ -26,13 +25,8 @@ func (s *service) Create(ctx context.Context, title string) (Todo, error) {
 		return Todo{}, fmt.Errorf("title cannot be empty")
 	}
 
-	id := make([]byte, 16)
-	if _, err := rand.Read(id); err != nil {
-		return Todo{}, fmt.Errorf("failed to generate id: %w", err)
-	}
-
 	t := Todo{
-		ID:    hex.EncodeToString(id),
+		ID:    ksuid.New().String(),
 		Title: title,
 	}
 

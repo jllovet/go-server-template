@@ -11,27 +11,27 @@
 <polygon fill="white" stroke="none" points="-4,4 -4,-547 720.14,-547 720.14,4 -4,4"/>
 <g id="clust1" class="cluster">
 <title>cluster_cmd</title>
-<polygon fill="none" stroke="grey" stroke-dasharray="5,2" points="8,-106 8,-185 157,-185 157,-106 8,-106"/>
+<polygon fill="white" stroke="grey" stroke-dasharray="5,2" points="8,-106 8,-185 157,-185 157,-106 8,-106"/>
 <text text-anchor="middle" x="82.5" y="-167.7" font-family="Times,serif" font-size="14.00">cmd</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_internal</title>
-<polygon fill="none" stroke="grey" stroke-dasharray="5,2" points="238,-98 238,-535 708.14,-535 708.14,-98 238,-98"/>
+<polygon fill="white" stroke="grey" stroke-dasharray="5,2" points="238,-98 238,-535 708.14,-535 708.14,-98 238,-98"/>
 <text text-anchor="middle" x="473.07" y="-517.7" font-family="Times,serif" font-size="14.00">internal</text>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_server</title>
-<polygon fill="none" stroke="black" points="266.25,-423 266.25,-502 646.32,-502 646.32,-423 266.25,-423"/>
+<polygon fill="white" stroke="black" points="266.25,-423 266.25,-502 646.32,-502 646.32,-423 266.25,-423"/>
 <text text-anchor="middle" x="456.29" y="-484.7" font-family="Times,serif" font-size="14.00">server</text>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_todo</title>
-<polygon fill="none" stroke="black" points="246,-249 246,-415 700.14,-415 700.14,-249 246,-249"/>
+<polygon fill="white" stroke="black" points="246,-249 246,-415 700.14,-415 700.14,-249 246,-249"/>
 <text text-anchor="middle" x="473.07" y="-397.7" font-family="Times,serif" font-size="14.00">todo (Domain)</text>
 </g>
 <g id="clust5" class="cluster">
 <title>cluster_adapters</title>
-<polygon fill="none" stroke="black" points="256.5,-106 256.5,-241 410,-241 410,-106 256.5,-106"/>
+<polygon fill="white" stroke="black" points="256.5,-106 256.5,-241 410,-241 410,-106 256.5,-106"/>
 <text text-anchor="middle" x="333.25" y="-223.7" font-family="Times,serif" font-size="14.00">Adapters</text>
 </g>
 <!-- Main -->
